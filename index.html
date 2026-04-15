@@ -8,76 +8,83 @@
         body { font-family: -apple-system, sans-serif; text-align: center; background: #f8f9fa; margin: 0; padding: 20px; color: #333; }
         .container { max-width: 400px; margin: auto; background: white; border-radius: 30px; padding: 30px 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.05); }
         
-        /* ユーザー選択画面 */
-        #user-selection { display: block; }
-        #main-app { display: none; }
+        /* 画面切り替え用 */
+        #user-selection, #main-app, #reset-menu { display: none; }
 
         .user-btn { 
             background: #fff; color: #444; border: 2px solid #eee; margin: 15px 0; padding: 20px; 
-            border-radius: 20px; font-size: 1.2rem; display: flex; align-items: center; justify-content: center;
+            border-radius: 20px; font-size: 1.2rem; display: flex; align-items: center; justify-content: space-between;
             cursor: pointer; transition: 0.2s;
         }
         .user-btn:active { background: #f1f3f5; transform: scale(0.98); }
-        .user-icon { font-size: 2rem; margin-right: 15px; }
+        .edit-name { font-size: 0.7rem; color: #007aff; text-decoration: underline; }
 
-        /* メイン画面 */
         .pet-display { font-size: 80px; margin: 10px 0; height: 110px; display: flex; align-items: center; justify-content: center; }
         .points { font-size: 3.5rem; font-weight: 800; color: #444; margin: 0; }
         
-        button.action-btn { 
-            width: 100%; font-size: 1.1rem; padding: 18px; margin: 10px 0; 
-            border-radius: 18px; border: none; color: white; font-weight: bold; 
-            cursor: pointer; transition: all 0.2s; box-shadow: 0 6px rgba(0,0,0,0.1);
-        }
+        button.action-btn { width: 100%; font-size: 1.1rem; padding: 18px; margin: 10px 0; border-radius: 18px; border: none; color: white; font-weight: bold; cursor: pointer; transition: all 0.2s; box-shadow: 0 6px rgba(0,0,0,0.1); }
         .btn-p { background: #ff8a80; box-shadow: 0 6px #e57373; }
         .btn-i { background: #82b1ff; box-shadow: 0 6px #64b5f6; }
         .btn-h { background: #b9f6ca; color: #558b2f; box-shadow: 0 6px #81c784; }
         button:active { transform: translateY(4px); box-shadow: 0 2px rgba(0,0,0,0.2); }
 
-        .nav-btn { background: none; border: none; color: #999; text-decoration: underline; margin-top: 20px; cursor: pointer; }
-        #current-user-name { font-weight: bold; color: #666; margin-bottom: 10px; display: block; }
-        #status { margin-bottom: 20px; font-size: 0.8rem; color: #bbb; display: flex; justify-content: space-around; }
-        .status-item { background: #f1f3f5; padding: 5px 10px; border-radius: 10px; }
+        .nav-btn { background: none; border: none; color: #999; text-decoration: underline; margin-top: 20px; cursor: pointer; font-size: 0.8rem; }
+        .reset-option { background: #fff0f0; color: #d63031; border: 1px solid #fab1a0; margin: 10px 0; padding: 15px; border-radius: 15px; width: 100%; cursor: pointer; font-weight: bold;}
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div id="user-selection">
+    <div id="user-selection" style="display: block;">
         <h2>だれの修行？</h2>
-        <div class="user-btn" onclick="selectUser('daughter')"><span class="user-icon">👧</span> おねえちゃん</div>
-        <div class="user-btn" onclick="selectUser('son')"><span class="user-icon">👦</span> おとうとくん</div>
-        <div class="user-btn" onclick="selectUser('parent')"><span class="user-icon">🧔</span> パパ・ママ</div>
+        <div class="user-btn" onclick="selectUser('u1')"><span>👧 <span id="u1-name-disp">ユーザー1</span></span> <span class="edit-name" onclick="editName(event, 'u1')">名前変更</span></div>
+        <div class="user-btn" onclick="selectUser('u2')"><span>👦 <span id="u2-name-disp">ユーザー2</span></span> <span class="edit-name" onclick="editName(event, 'u2')">名前変更</span></div>
+        <div class="user-btn" onclick="selectUser('u3')"><span>🧔 <span id="u3-name-disp">ユーザー3</span></span> <span class="edit-name" onclick="editName(event, 'u3')">名前変更</span></div>
+        <button class="nav-btn" onclick="showResetMenu()">設定・リセット</button>
     </div>
 
     <div id="main-app">
-        <span id="current-user-name">ユーザー名</span>
+        <span id="current-user-name" style="font-weight:bold; color:#666;">名前</span>
         <div id="pet-stage" class="pet-display">🥚</div>
         <div id="total-display" class="points">0</div>
-        
-        <div id="status">
-            <span class="status-item">P: <span id="p-pts">0</span></span>
-            <span class="status-item">I: <span id="i-pts">0</span></span>
-            <span class="status-item">H: <span id="h-pts">0</span></span>
-        </div>
-
+        <div style="margin-bottom:20px; font-size:0.8rem; color:#bbb;">P: <span id="p-pts">0</span> | I: <span id="i-pts">0</span> | H: <span id="h-pts">0</span></div>
         <button class="action-btn btn-p" onclick="addPoint('p', 15)">空手・ダンス (+15)</button>
         <button class="action-btn btn-i" onclick="addPoint('i', 10)">英語・学習 (+10)</button>
         <button class="action-btn btn-h" onclick="addPoint('h', 5)">お手伝い (+5)</button>
+        <button class="nav-btn" onclick="showMenu()">ユーザーをかえる</button>
+    </div>
 
-        <button class="nav-btn" onclick="backToMenu()">ユーザーをかえる</button>
+    <div id="reset-menu">
+        <h3>データの管理</h3>
+        <p style="font-size:0.7rem; color:#999;">消したい項目を選んでください</p>
+        <button class="reset-option" onclick="resetTarget('u1')"><span id="u1-name-btn">U1</span>のデータを消す</button>
+        <button class="reset-option" onclick="resetTarget('u2')"><span id="u2-name-btn">U2</span>のデータを消す</button>
+        <button class="reset-option" onclick="resetTarget('u3')"><span id="u3-name-btn">U3</span>のデータを消す</button>
+        <button class="reset-option" style="background:#d63031; color:#fff;" onclick="resetTarget('all')">全ユーザーを消す</button>
+        <button class="nav-btn" onclick="showMenu()">もどる</button>
     </div>
 </div>
 
 <script>
-    // ユーザーごとのデータを管理する構造
-    let allData = JSON.parse(localStorage.getItem('familyShugyoData')) || {
-        daughter: { p: 0, i: 0, h: 0, total: 0, name: "おねえちゃん" },
-        son: { p: 0, i: 0, h: 0, total: 0, name: "おとうとくん" },
-        parent: { p: 0, i: 0, h: 0, total: 0, name: "パパ・ママ" }
+    // 初期設定（名前もデータに含める）
+    const defaultData = {
+        u1: { p: 0, i: 0, h: 0, total: 0, name: "ユーザー1" },
+        u2: { p: 0, i: 0, h: 0, total: 0, name: "ユーザー2" },
+        u3: { p: 0, i: 0, h: 0, total: 0, name: "ユーザー3" }
     };
-
+    let allData = JSON.parse(localStorage.getItem('familyShugyoData')) || defaultData;
     let currentUser = null;
+
+    function showMenu() {
+        document.getElementById('user-selection').style.display = 'block';
+        document.getElementById('main-app').style.display = 'none';
+        document.getElementById('reset-menu').style.display = 'none';
+        // 名前表示を更新
+        ['u1','u2','u3'].forEach(id => {
+            document.getElementById(id + '-name-disp').innerText = allData[id].name;
+            document.getElementById(id + '-name-btn').innerText = allData[id].name;
+        });
+    }
 
     function selectUser(userKey) {
         currentUser = userKey;
@@ -87,9 +94,19 @@
         updateDisplay();
     }
 
-    function backToMenu() {
-        document.getElementById('user-selection').style.display = 'block';
-        document.getElementById('main-app').style.display = 'none';
+    function editName(event, userKey) {
+        event.stopPropagation(); // ボタン自体のクリックイベントを防ぐ
+        const newName = prompt("新しい名前を入力してください", allData[userKey].name);
+        if (newName) {
+            allData[userKey].name = newName;
+            localStorage.setItem('familyShugyoData', JSON.stringify(allData));
+            showMenu();
+        }
+    }
+
+    function showResetMenu() {
+        document.getElementById('user-selection').style.display = 'none';
+        document.getElementById('reset-menu').style.display = 'block';
     }
 
     function updateDisplay() {
@@ -98,10 +115,7 @@
         document.getElementById('p-pts').innerText = d.p;
         document.getElementById('i-pts').innerText = d.i;
         document.getElementById('h-pts').innerText = d.h;
-        
-        const petStage = document.getElementById('pet-stage');
-        if (d.total >= 100) { petStage.innerText = "🐥"; }
-        else { petStage.innerText = "🥚"; }
+        document.getElementById('pet-stage').innerText = d.total >= 100 ? "🐥" : "🥚";
     }
 
     function addPoint(type, pts) {
@@ -109,9 +123,9 @@
         allData[currentUser].total += pts;
         localStorage.setItem('familyShugyoData', JSON.stringify(allData));
         updateDisplay();
-        if (window.navigator.vibrate) window.navigator.vibrate(10);
     }
-</script>
 
-</body>
-</html>
+    function resetTarget(target) {
+        if (!confirm("本当に消去しますか？")) return;
+        if (target === 'all') {
+            allData = JSON.parse(JSON.stringify(defaultData)); // デ
