@@ -7,56 +7,39 @@
     <style>
         body { font-family: -apple-system, sans-serif; text-align: center; background: #f8f9fa; margin: 0; padding: 20px; color: #333; }
         .container { max-width: 400px; margin: auto; background: white; border-radius: 30px; padding: 30px 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.05); }
-        
         #user-selection, #main-app { display: none; }
-
-        .user-btn { 
-            background: #fff; color: #444; border: 2px solid #eee; margin: 15px 0; padding: 25px; 
-            border-radius: 20px; font-size: 1.2rem; display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: 0.2s;
-        }
+        .user-btn { background: #fff; color: #444; border: 2px solid #eee; margin: 15px 0; padding: 25px; border-radius: 20px; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
         .user-btn:active { background: #f1f3f5; transform: scale(0.98); }
-
         .pet-display { font-size: 80px; margin: 10px 0; height: 110px; display: flex; align-items: center; justify-content: center; }
-        .total-points-label { font-size: 0.85rem; color: #999; font-weight: bold; margin-top: 10px; }
+        .total-label { font-size: 0.85rem; color: #999; font-weight: bold; margin-top: 10px; }
         .points { font-size: 3.5rem; font-weight: 800; color: #444; margin: 0; }
-        
-        /* ステータスバーのデザイン */
         #status-area { display: flex; flex-direction: column; gap: 12px; margin: 20px 0; }
         .status-row { display: flex; align-items: center; justify-content: space-between; background: #f8f9fa; padding: 12px 15px; border-radius: 15px; }
         .status-label { font-size: 0.85rem; font-weight: bold; width: 90px; text-align: left; }
         .bar-bg { flex-grow: 1; height: 12px; background: #e9ecef; border-radius: 6px; margin: 0 10px; overflow: hidden; }
         .bar-fill { height: 100%; width: 0%; transition: width 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .p-color { background: #ff8a80; }
-        .i-color { background: #82b1ff; }
-        .h-color { background: #b9f6ca; }
+        .p-color { background: #ff8a80; } .i-color { background: #82b1ff; } .h-color { background: #b9f6ca; }
         .pts-num { font-weight: bold; font-size: 0.9rem; width: 40px; text-align: right; color: #666; }
-
-        button.action-btn { width: 100%; font-size: 1.1rem; padding: 18px; margin: 8px 0; border-radius: 18px; border: none; color: white; font-weight: bold; cursor: pointer; transition: all 0.2s; box-shadow: 0 6px rgba(0,0,0,0.1); }
-        .btn-p { background: #ff8a80; box-shadow: 0 6px #e57373; }
-        .btn-i { background: #82b1ff; box-shadow: 0 6px #64b5f6; }
-        .btn-h { background: #b9f6ca; color: #558b2f; box-shadow: 0 6px #81c784; }
+        button.action-btn { width: 100%; font-size: 1.1rem; padding: 18px; margin: 8px 0; border-radius: 18px; border: none; color: white; font-weight: bold; cursor: pointer; transition: 0.2s; box-shadow: 0 6px rgba(0,0,0,0.1); }
+        .btn-p { background: #ff8a80; box-shadow: 0 6px #e57373; } .btn-i { background: #82b1ff; box-shadow: 0 6px #64b5f6; } .btn-h { background: #b9f6ca; color: #558b2f; box-shadow: 0 6px #81c784; }
         button:active { transform: translateY(4px); box-shadow: 0 2px rgba(0,0,0,0.2); }
-
         .nav-btn { display: inline-block; color: #999; text-decoration: underline; margin-top: 20px; cursor: pointer; font-size: 0.85rem; padding: 10px; background: none; border: none; }
     </style>
 </head>
 <body>
-
 <div class="container">
     <div id="user-selection" style="display: block;">
         <h2 style="margin-bottom:30px;">だれの修行？</h2>
-        <div class="user-btn" onclick="selectUser('u1')"><span>👧 <span id="u1-name-disp">ユーザー1</span></span></div>
-        <div class="user-btn" onclick="selectUser('u2')"><span>👦 <span id="u2-name-disp">ユーザー2</span></span></div>
-        <div class="user-btn" onclick="selectUser('u3')"><span>🧔 <span id="u3-name-disp">ユーザー3</span></span></div>
-        <a href="settings.html" class="nav-btn">設定・リセット</a>
+        <div class="user-btn" onclick="selectUser('u1')"><span>👧 <span id="u1-name-disp"></span></span></div>
+        <div class="user-btn" onclick="selectUser('u2')"><span>👦 <span id="u2-name-disp"></span></span></div>
+        <div class="user-btn" onclick="selectUser('u3')"><span>🧔 <span id="u3-name-disp"></span></span></div>
+        <a href="settings.html" class="nav-btn">⚙️ 設定・管理</a>
     </div>
 
     <div id="main-app">
         <span id="current-user-name" style="font-weight:bold; color:#666; font-size:1.1rem;">名前</span>
         <div id="pet-stage" class="pet-display">🥚</div>
-        
-        <div class="total-points-label">修行ランク</div>
+        <div class="total-label">修行ランク</div>
         <div id="total-display" class="points">0</div>
         
         <div id="status-area">
@@ -77,10 +60,9 @@
             </div>
         </div>
         
-        <button class="action-btn btn-p" onclick="addPoint('p', 15)">空手・ダンス (+15)</button>
-        <button class="action-btn btn-i" onclick="addPoint('i', 10)">英語・学習 (+10)</button>
-        <button class="action-btn btn-h" onclick="addPoint('h', 5)">お手伝い (+5)</button>
-        
+        <button id="display-btn-p" class="action-btn btn-p" onclick="addPoint('p', 15)"></button>
+        <button id="display-btn-i" class="action-btn btn-i" onclick="addPoint('i', 10)"></button>
+        <button id="display-btn-h" class="action-btn btn-h" onclick="addPoint('h', 5)"></button>
         <button class="nav-btn" onclick="showMenu()">ユーザーをかえる</button>
     </div>
 </div>
@@ -89,7 +71,8 @@
     const defaultData = {
         u1: { p: 0, i: 0, h: 0, total: 0, name: "おねえちゃん" },
         u2: { p: 0, i: 0, h: 0, total: 0, name: "おとうとくん" },
-        u3: { p: 0, i: 0, h: 0, total: 0, name: "パパ・ママ" }
+        u3: { p: 0, i: 0, h: 0, total: 0, name: "パパ・ママ" },
+        config: { btnP: "空手・ダンス", btnI: "英語・学習", btnH: "お手伝い" }
     };
 
     let allData = JSON.parse(localStorage.getItem('familyShugyoData')) || defaultData;
@@ -97,11 +80,16 @@
 
     function showMenu() {
         allData = JSON.parse(localStorage.getItem('familyShugyoData')) || defaultData;
+        if (!allData.config) allData.config = defaultData.config;
+
         document.getElementById('user-selection').style.display = 'block';
         document.getElementById('main-app').style.display = 'none';
-        ['u1','u2','u3'].forEach(id => {
-            document.getElementById(id + '-name-disp').innerText = allData[id].name;
-        });
+
+        // 表示の更新
+        ['u1','u2','u3'].forEach(id => document.getElementById(id + '-name-disp').innerText = allData[id].name);
+        document.getElementById('display-btn-p').innerText = `${allData.config.btnP} (+15)`;
+        document.getElementById('display-btn-i').innerText = `${allData.config.btnI} (+10)`;
+        document.getElementById('display-btn-h').innerText = `${allData.config.btnH} (+5)`;
     }
 
     function selectUser(userKey) {
@@ -115,19 +103,13 @@
     function updateDisplay() {
         if (!currentUser) return;
         const d = allData[currentUser];
-        
-        // 数字の更新
         document.getElementById('total-display').innerText = d.total;
         document.getElementById('p-pts').innerText = d.p;
         document.getElementById('i-pts').innerText = d.i;
         document.getElementById('h-pts').innerText = d.h;
-
-        // ゲージの更新 (ひとまず各項目150ptで満タン計算)
-        const maxBar = 150;
-        document.getElementById('p-bar').style.width = Math.min((d.p / maxBar) * 100, 100) + "%";
-        document.getElementById('i-bar').style.width = Math.min((d.i / maxBar) * 100, 100) + "%";
-        document.getElementById('h-bar').style.width = Math.min((d.h / maxBar) * 100, 100) + "%";
-        
+        document.getElementById('p-bar').style.width = Math.min((d.p / 150) * 100, 100) + "%";
+        document.getElementById('i-bar').style.width = Math.min((d.i / 150) * 100, 100) + "%";
+        document.getElementById('h-bar').style.width = Math.min((d.h / 150) * 100, 100) + "%";
         document.getElementById('pet-stage').innerText = d.total >= 100 ? "🐥" : "🥚";
     }
 
@@ -142,6 +124,5 @@
 
     window.onload = showMenu;
 </script>
-
 </body>
 </html>
