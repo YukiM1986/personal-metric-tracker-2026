@@ -5,22 +5,46 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>修行ペット - 開発版</title>
     <style>
-        body { font-family: -apple-system, sans-serif; text-align: center; background: #eef2f3; margin: 0; padding: 20px; }
-        .container { max-width: 400px; margin: auto; background: white; border-radius: 20px; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
-        .pet-display { font-size: 80px; margin: 20px 0; height: 120px; display: flex; align-items: center; justify-content: center; }
-        .points { font-size: 3rem; font-weight: bold; color: #ff9500; margin: 5px 0; }
-        button { width: 100%; font-size: 1.1rem; padding: 15px; margin: 8px 0; border-radius: 12px; border: none; color: white; font-weight: bold; cursor: pointer; }
-        .btn-p { background: #E5989B; color: white; box-shadow: 0 4px #B5838D; } /* パワー */
-        .btn-i { background: #B8C0FF; color: white; box-shadow: 0 4px #8E94F2; } /* インテリ */
-        .btn-h { background: #95D5B2; color: white; box-shadow: 0 4px #74A892; } /* ハート */
-        #status { margin-bottom: 20px; font-size: 0.8rem; color: #888; }
-        /* 初期化ボタンのスタイル */
-        .btn-reset { background: none; color: #ff3b30; border: 1px solid #ff3b30; margin-top: 30px; padding: 8px; font-size: 0.8rem; width: auto; opacity: 0.6; }
-        /* 押し心地を出すための追加演出（任意） */
-        button:active {
-            transform: translateY(2px);
-            box-shadow: 0 2px #777;
+        body { font-family: -apple-system, sans-serif; text-align: center; background: #f8f9fa; margin: 0; padding: 20px; color: #333; }
+        .container { max-width: 400px; margin: auto; background: white; border-radius: 30px; padding: 30px 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.05); }
+        .pet-display { font-size: 80px; margin: 20px 0; height: 120px; display: flex; align-items: center; justify-content: center; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.1)); }
+        .points { font-size: 3.5rem; font-weight: 800; color: #444; margin: 5px 0; letter-spacing: -1px; }
+        .label { font-size: 0.85rem; color: #999; font-weight: bold; }
+        
+        /* ボタンの共通設定 */
+        button { 
+            width: 100%; font-size: 1.1rem; padding: 18px; margin: 10px 0; 
+            border-radius: 18px; border: none; color: white; font-weight: bold; 
+            cursor: pointer; transition: all 0.2s; position: relative;
         }
+
+        /* パワーボタン */
+        .btn-p { 
+            background: #ff8a80; 
+            box-shadow: 0 6px #e57373;
+        }
+        /* インテリボタン */
+        .btn-i { 
+            background: #82b1ff; 
+            box-shadow: 0 6px #64b5f6;
+        }
+        /* ハートボタン */
+        .btn-h { 
+            background: #b9f6ca; 
+            color: #558b2f; /* 文字色を少し濃くして見やすく */
+            box-shadow: 0 6px #81c784;
+        }
+
+        /* 押した時の演出 */
+        button:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px rgba(0,0,0,0.2);
+        }
+
+        #status { margin-bottom: 25px; font-size: 0.8rem; color: #bbb; display: flex; justify-content: space-around; }
+        .status-item { background: #f1f3f5; padding: 5px 10px; border-radius: 10px; }
+        
+        .btn-reset { background: none; color: #adb5bd; border: none; margin-top: 40px; font-size: 0.75rem; text-decoration: underline; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -28,14 +52,16 @@
 <div class="container">
     <div id="pet-stage" class="pet-display">🥚</div>
 
-    <div style="font-size: 0.9rem; color: #666;">合計ポイント</div>
+    <div class="label">TOTAL EXPERIENCE</div>
     <div id="total-display" class="points">0</div>
     
     <div id="status">
-        パワー: <span id="p-pts">0</span> | インテリ: <span id="i-pts">0</span> | ハート: <span id="h-pts">0</span>
+        <span class="status-item">P: <span id="p-pts">0</span></span>
+        <span class="status-item">I: <span id="i-pts">0</span></span>
+        <span class="status-item">H: <span id="h-pts">0</span></span>
     </div>
 
-    <button class="btn-p" onclick="addPoint('p', 15)">空手・ダンス・バレエ (+15)</button>
+    <button class="btn-p" onclick="addPoint('p', 15)">空手・ダンス (+15)</button>
     <button class="btn-i" onclick="addPoint('i', 10)">英語・学習・宿題 (+10)</button>
     <button class="btn-h" onclick="addPoint('h', 5)">お手伝い (+5)</button>
 
@@ -51,10 +77,9 @@
         document.getElementById('i-pts').innerText = data.i;
         document.getElementById('h-pts').innerText = data.h;
         
-        // ポイントに応じてペットの見た目を変える（簡易版）
         const petStage = document.getElementById('pet-stage');
         if (data.total >= 100) {
-            petStage.innerText = "🐥"; // 100ptで孵化！
+            petStage.innerText = "🐥";
         } else {
             petStage.innerText = "🥚";
         }
@@ -65,15 +90,16 @@
         data.total += pts;
         localStorage.setItem('shugyoData', JSON.stringify(data));
         updateDisplay();
+        
+        // iPhone/iPad用の軽いバイブレーション（あれば）
+        if (window.navigator.vibrate) window.navigator.vibrate(10);
     }
 
-    // 初期化機能
     function resetPoints() {
         if (confirm("これまでの修行データをすべて消してもいいですか？")) {
             data = { p: 0, i: 0, h: 0, total: 0 };
             localStorage.setItem('shugyoData', JSON.stringify(data));
             updateDisplay();
-            alert("データをリセットしました。");
         }
     }
 
