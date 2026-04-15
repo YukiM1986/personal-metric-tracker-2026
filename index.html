@@ -95,4 +95,68 @@
 
     function selectUser(userKey) {
         currentUser = userKey;
-        document.getElementById('user
+        document.getElementById('user-selection').style.display = 'none';
+        document.getElementById('main-app').style.display = 'block';
+        document.getElementById('current-user-name').innerText = allData[currentUser].name;
+        updateDisplay();
+    }
+
+    function editName(event, userKey) {
+        event.stopPropagation();
+        const newName = prompt("新しい名前を入力してください", allData[userKey].name);
+        if (newName && newName.trim() !== "") {
+            allData[userKey].name = newName;
+            saveData();
+            showMenu();
+        }
+    }
+
+    function showResetMenu() {
+        document.getElementById('user-selection').style.display = 'none';
+        document.getElementById('reset-menu').style.display = 'block';
+    }
+
+    function updateDisplay() {
+        if (!currentUser) return;
+        const d = allData[currentUser];
+        document.getElementById('total-display').innerText = d.total;
+        document.getElementById('p-pts').innerText = d.p;
+        document.getElementById('i-pts').innerText = d.i;
+        document.getElementById('h-pts').innerText = d.h;
+        document.getElementById('pet-stage').innerText = d.total >= 100 ? "🐥" : "🥚";
+    }
+
+    function addPoint(type, pts) {
+        if (!currentUser) return;
+        allData[currentUser][type] += pts;
+        allData[currentUser].total += pts;
+        saveData();
+        updateDisplay();
+        if (window.navigator.vibrate) window.navigator.vibrate(10);
+    }
+
+    function saveData() {
+        localStorage.setItem('familyShugyoData', JSON.stringify(allData));
+    }
+
+    function resetTarget(target) {
+        if (!confirm("データをリセットします。本当によろしいですか？")) return;
+        if (target === 'all') {
+            const n1 = allData.u1.name, n2 = allData.u2.name, n3 = allData.u3.name;
+            allData = JSON.parse(JSON.stringify(defaultData));
+            allData.u1.name = n1; allData.u2.name = n2; allData.u3.name = n3;
+        } else {
+            const currentName = allData[target].name;
+            allData[target] = { p: 0, i: 0, h: 0, total: 0, name: currentName };
+        }
+        saveData();
+        alert("リセットしました");
+        showMenu();
+    }
+
+    // 起動
+    window.onload = showMenu;
+</script>
+
+</body>
+</html>
