@@ -10,12 +10,17 @@
         .pet-display { font-size: 80px; margin: 20px 0; height: 120px; display: flex; align-items: center; justify-content: center; }
         .points { font-size: 3rem; font-weight: bold; color: #ff9500; margin: 5px 0; }
         button { width: 100%; font-size: 1.1rem; padding: 15px; margin: 8px 0; border-radius: 12px; border: none; color: white; font-weight: bold; cursor: pointer; }
-        .btn-p { background: #ff3b30; }
-        .btn-i { background: #007aff; }
-        .btn-h { background: #34c759; }
+        .btn-p { background: #E5989B; color: white; box-shadow: 0 4px #B5838D; } /* パワー */
+        .btn-i { background: #B8C0FF; color: white; box-shadow: 0 4px #8E94F2; } /* インテリ */
+        .btn-h { background: #95D5B2; color: white; box-shadow: 0 4px #74A892; } /* ハート */
         #status { margin-bottom: 20px; font-size: 0.8rem; color: #888; }
         /* 初期化ボタンのスタイル */
         .btn-reset { background: none; color: #ff3b30; border: 1px solid #ff3b30; margin-top: 30px; padding: 8px; font-size: 0.8rem; width: auto; opacity: 0.6; }
+        /* 押し心地を出すための追加演出（任意） */
+        button:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px #777;
+        }
     </style>
 </head>
 <body>
