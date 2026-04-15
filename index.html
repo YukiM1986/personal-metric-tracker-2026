@@ -8,7 +8,6 @@
         body { font-family: -apple-system, sans-serif; text-align: center; background: #f8f9fa; margin: 0; padding: 20px; color: #333; }
         .container { max-width: 400px; margin: auto; background: white; border-radius: 30px; padding: 30px 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.05); }
         
-        /* 画面切り替え用 */
         #user-selection, #main-app, #reset-menu { display: none; }
 
         .user-btn { 
@@ -17,7 +16,7 @@
             cursor: pointer; transition: 0.2s;
         }
         .user-btn:active { background: #f1f3f5; transform: scale(0.98); }
-        .edit-name { font-size: 0.7rem; color: #007aff; text-decoration: underline; }
+        .edit-name { font-size: 0.75rem; color: #007aff; text-decoration: underline; padding: 10px; }
 
         .pet-display { font-size: 80px; margin: 10px 0; height: 110px; display: flex; align-items: center; justify-content: center; }
         .points { font-size: 3.5rem; font-weight: 800; color: #444; margin: 0; }
@@ -28,7 +27,7 @@
         .btn-h { background: #b9f6ca; color: #558b2f; box-shadow: 0 6px #81c784; }
         button:active { transform: translateY(4px); box-shadow: 0 2px rgba(0,0,0,0.2); }
 
-        .nav-btn { background: none; border: none; color: #999; text-decoration: underline; margin-top: 20px; cursor: pointer; font-size: 0.8rem; }
+        .nav-btn { background: none; border: none; color: #999; text-decoration: underline; margin-top: 20px; cursor: pointer; font-size: 0.85rem; padding: 10px; }
         .reset-option { background: #fff0f0; color: #d63031; border: 1px solid #fab1a0; margin: 10px 0; padding: 15px; border-radius: 15px; width: 100%; cursor: pointer; font-weight: bold;}
     </style>
 </head>
@@ -36,50 +35,58 @@
 
 <div class="container">
     <div id="user-selection" style="display: block;">
-        <h2>だれの修行？</h2>
-        <div class="user-btn" onclick="selectUser('u1')"><span>👧 <span id="u1-name-disp">ユーザー1</span></span> <span class="edit-name" onclick="editName(event, 'u1')">名前変更</span></div>
-        <div class="user-btn" onclick="selectUser('u2')"><span>👦 <span id="u2-name-disp">ユーザー2</span></span> <span class="edit-name" onclick="editName(event, 'u2')">名前変更</span></div>
-        <div class="user-btn" onclick="selectUser('u3')"><span>🧔 <span id="u3-name-disp">ユーザー3</span></span> <span class="edit-name" onclick="editName(event, 'u3')">名前変更</span></div>
+        <h2 style="margin-bottom:30px;">だれの修行？</h2>
+        <div class="user-btn" onclick="selectUser('u1')"><span>👧 <span id="u1-name-disp">ユーザー1</span></span> <span class="edit-name" onclick="editName(event, 'u1')">変更</span></div>
+        <div class="user-btn" onclick="selectUser('u2')"><span>👦 <span id="u2-name-disp">ユーザー2</span></span> <span class="edit-name" onclick="editName(event, 'u2')">変更</span></div>
+        <div class="user-btn" onclick="selectUser('u3')"><span>🧔 <span id="u3-name-disp">ユーザー3</span></span> <span class="edit-name" onclick="editName(event, 'u3')">変更</span></div>
         <button class="nav-btn" onclick="showResetMenu()">設定・リセット</button>
     </div>
 
     <div id="main-app">
-        <span id="current-user-name" style="font-weight:bold; color:#666;">名前</span>
+        <span id="current-user-name" style="font-weight:bold; color:#666; font-size:1.1rem;">名前</span>
         <div id="pet-stage" class="pet-display">🥚</div>
         <div id="total-display" class="points">0</div>
         <div style="margin-bottom:20px; font-size:0.8rem; color:#bbb;">P: <span id="p-pts">0</span> | I: <span id="i-pts">0</span> | H: <span id="h-pts">0</span></div>
+        
         <button class="action-btn btn-p" onclick="addPoint('p', 15)">空手・ダンス (+15)</button>
         <button class="action-btn btn-i" onclick="addPoint('i', 10)">英語・学習 (+10)</button>
         <button class="action-btn btn-h" onclick="addPoint('h', 5)">お手伝い (+5)</button>
+        
         <button class="nav-btn" onclick="showMenu()">ユーザーをかえる</button>
     </div>
 
     <div id="reset-menu">
         <h3>データの管理</h3>
-        <p style="font-size:0.7rem; color:#999;">消したい項目を選んでください</p>
-        <button class="reset-option" onclick="resetTarget('u1')"><span id="u1-name-btn">U1</span>のデータを消す</button>
-        <button class="reset-option" onclick="resetTarget('u2')"><span id="u2-name-btn">U2</span>のデータを消す</button>
-        <button class="reset-option" onclick="resetTarget('u3')"><span id="u3-name-btn">U3</span>のデータを消す</button>
-        <button class="reset-option" style="background:#d63031; color:#fff;" onclick="resetTarget('all')">全ユーザーを消す</button>
+        <button class="reset-option" onclick="resetTarget('u1')"><span id="u1-name-btn">U1</span>をリセット</button>
+        <button class="reset-option" onclick="resetTarget('u2')"><span id="u2-name-btn">U2</span>をリセット</button>
+        <button class="reset-option" onclick="resetTarget('u3')"><span id="u3-name-btn">U3</span>をリセット</button>
+        <button class="reset-option" style="background:#d63031; color:#fff;" onclick="resetTarget('all')">全員リセット</button>
         <button class="nav-btn" onclick="showMenu()">もどる</button>
     </div>
 </div>
 
 <script>
-    // 初期設定（名前もデータに含める）
+    // デフォルト設定
     const defaultData = {
-        u1: { p: 0, i: 0, h: 0, total: 0, name: "ユーザー1" },
-        u2: { p: 0, i: 0, h: 0, total: 0, name: "ユーザー2" },
-        u3: { p: 0, i: 0, h: 0, total: 0, name: "ユーザー3" }
+        u1: { p: 0, i: 0, h: 0, total: 0, name: "おねえちゃん" },
+        u2: { p: 0, i: 0, h: 0, total: 0, name: "おとうとくん" },
+        u3: { p: 0, i: 0, h: 0, total: 0, name: "パパ・ママ" }
     };
-    let allData = JSON.parse(localStorage.getItem('familyShugyoData')) || defaultData;
+
+    // データの読み込み
+    let allData = JSON.parse(localStorage.getItem('familyShugyoData'));
+    if (!allData || !allData.u1) {
+        allData = defaultData;
+    }
+
     let currentUser = null;
 
+    // 画面表示の更新（全般）
     function showMenu() {
         document.getElementById('user-selection').style.display = 'block';
         document.getElementById('main-app').style.display = 'none';
         document.getElementById('reset-menu').style.display = 'none';
-        // 名前表示を更新
+        
         ['u1','u2','u3'].forEach(id => {
             document.getElementById(id + '-name-disp').innerText = allData[id].name;
             document.getElementById(id + '-name-btn').innerText = allData[id].name;
@@ -88,44 +95,4 @@
 
     function selectUser(userKey) {
         currentUser = userKey;
-        document.getElementById('user-selection').style.display = 'none';
-        document.getElementById('main-app').style.display = 'block';
-        document.getElementById('current-user-name').innerText = allData[currentUser].name;
-        updateDisplay();
-    }
-
-    function editName(event, userKey) {
-        event.stopPropagation(); // ボタン自体のクリックイベントを防ぐ
-        const newName = prompt("新しい名前を入力してください", allData[userKey].name);
-        if (newName) {
-            allData[userKey].name = newName;
-            localStorage.setItem('familyShugyoData', JSON.stringify(allData));
-            showMenu();
-        }
-    }
-
-    function showResetMenu() {
-        document.getElementById('user-selection').style.display = 'none';
-        document.getElementById('reset-menu').style.display = 'block';
-    }
-
-    function updateDisplay() {
-        const d = allData[currentUser];
-        document.getElementById('total-display').innerText = d.total;
-        document.getElementById('p-pts').innerText = d.p;
-        document.getElementById('i-pts').innerText = d.i;
-        document.getElementById('h-pts').innerText = d.h;
-        document.getElementById('pet-stage').innerText = d.total >= 100 ? "🐥" : "🥚";
-    }
-
-    function addPoint(type, pts) {
-        allData[currentUser][type] += pts;
-        allData[currentUser].total += pts;
-        localStorage.setItem('familyShugyoData', JSON.stringify(allData));
-        updateDisplay();
-    }
-
-    function resetTarget(target) {
-        if (!confirm("本当に消去しますか？")) return;
-        if (target === 'all') {
-            allData = JSON.parse(JSON.stringify(defaultData)); // デ
+        document.getElementById('user
