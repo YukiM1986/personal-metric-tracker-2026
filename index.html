@@ -59,4 +59,55 @@
 <script>
     const defaultData = {
         u1: { p: 0, i: 0, h: 0, total: 0, name: "おねえちゃん" },
-        u2: { p: 0, i: 0, h
+        u2: { p: 0, i: 0, h: 0, total: 0, name: "おとうとくん" },
+        u3: { p: 0, i: 0, h: 0, total: 0, name: "パパ・ママ" }
+    };
+
+    let allData = JSON.parse(localStorage.getItem('familyShugyoData')) || defaultData;
+    let currentUser = null;
+
+    function showMenu() {
+        // settings.htmlで変更された最新のデータを読み直す
+        allData = JSON.parse(localStorage.getItem('familyShugyoData')) || defaultData;
+
+        document.getElementById('user-selection').style.display = 'block';
+        document.getElementById('main-app').style.display = 'none';
+        
+        ['u1','u2','u3'].forEach(id => {
+            document.getElementById(id + '-name-disp').innerText = allData[id].name;
+        });
+    }
+
+    function selectUser(userKey) {
+        currentUser = userKey;
+        document.getElementById('user-selection').style.display = 'none';
+        document.getElementById('main-app').style.display = 'block';
+        document.getElementById('current-user-name').innerText = allData[currentUser].name;
+        updateDisplay();
+    }
+
+    function updateDisplay() {
+        if (!currentUser) return;
+        const d = allData[currentUser];
+        document.getElementById('total-display').innerText = d.total;
+        document.getElementById('p-pts').innerText = d.p;
+        document.getElementById('i-pts').innerText = d.i;
+        document.getElementById('h-pts').innerText = d.h;
+        document.getElementById('pet-stage').innerText = d.total >= 100 ? "🐥" : "🥚";
+    }
+
+    function addPoint(type, pts) {
+        if (!currentUser) return;
+        allData[currentUser][type] += pts;
+        allData[currentUser].total += pts;
+        localStorage.setItem('familyShugyoData', JSON.stringify(allData));
+        updateDisplay();
+        if (window.navigator.vibrate) window.navigator.vibrate(10);
+    }
+
+    // 起動
+    window.onload = showMenu;
+</script>
+
+</body>
+</html>
