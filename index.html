@@ -7,18 +7,23 @@
     <style>
         body { font-family: -apple-system, sans-serif; text-align: center; background: #eef2f3; margin: 0; padding: 20px; }
         .container { max-width: 400px; margin: auto; background: white; border-radius: 20px; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
-        .points { font-size: 3rem; font-weight: bold; color: #ff9500; margin: 10px 0; }
+        .pet-display { font-size: 80px; margin: 20px 0; height: 120px; display: flex; align-items: center; justify-content: center; }
+        .points { font-size: 3rem; font-weight: bold; color: #ff9500; margin: 5px 0; }
         button { width: 100%; font-size: 1.1rem; padding: 15px; margin: 8px 0; border-radius: 12px; border: none; color: white; font-weight: bold; cursor: pointer; }
-        .btn-p { background: #ff3b30; } /* パワー：赤 */
-        .btn-i { background: #007aff; } /* インテリ：青 */
-        .btn-h { background: #34c759; } /* ハート：緑 */
+        .btn-p { background: #ff3b30; }
+        .btn-i { background: #007aff; }
+        .btn-h { background: #34c759; }
         #status { margin-bottom: 20px; font-size: 0.8rem; color: #888; }
+        /* 初期化ボタンのスタイル */
+        .btn-reset { background: none; color: #ff3b30; border: 1px solid #ff3b30; margin-top: 30px; padding: 8px; font-size: 0.8rem; width: auto; opacity: 0.6; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div style="font-size: 0.9rem; color: #666;">修行の成果（合計ポイント）</div>
+    <div id="pet-stage" class="pet-display">🥚</div>
+
+    <div style="font-size: 0.9rem; color: #666;">合計ポイント</div>
     <div id="total-display" class="points">0</div>
     
     <div id="status">
@@ -28,30 +33,45 @@
     <button class="btn-p" onclick="addPoint('p', 15)">空手・ダンス・バレエ (+15)</button>
     <button class="btn-i" onclick="addPoint('i', 10)">英語・学習・宿題 (+10)</button>
     <button class="btn-h" onclick="addPoint('h', 5)">お手伝い (+5)</button>
+
+    <button class="btn-reset" onclick="resetPoints()">データを初期化する</button>
 </div>
 
 <script>
-    // 倉庫(localStorage)からデータを読み込む。なければ0で初期化。
     let data = JSON.parse(localStorage.getItem('shugyoData')) || { p: 0, i: 0, h: 0, total: 0 };
 
-    // 画面の数字を最新にする関数
     function updateDisplay() {
         document.getElementById('total-display').innerText = data.total;
         document.getElementById('p-pts').innerText = data.p;
         document.getElementById('i-pts').innerText = data.i;
         document.getElementById('h-pts').innerText = data.h;
+        
+        // ポイントに応じてペットの見た目を変える（簡易版）
+        const petStage = document.getElementById('pet-stage');
+        if (data.total >= 100) {
+            petStage.innerText = "🐥"; // 100ptで孵化！
+        } else {
+            petStage.innerText = "🥚";
+        }
     }
 
-    // ボタンを押した時の処理
     function addPoint(type, pts) {
         data[type] += pts;
         data.total += pts;
-        // 倉庫に保存
         localStorage.setItem('shugyoData', JSON.stringify(data));
         updateDisplay();
     }
 
-    // 最初にページを開いた時に表示を更新
+    // 初期化機能
+    function resetPoints() {
+        if (confirm("これまでの修行データをすべて消してもいいですか？")) {
+            data = { p: 0, i: 0, h: 0, total: 0 };
+            localStorage.setItem('shugyoData', JSON.stringify(data));
+            updateDisplay();
+            alert("データをリセットしました。");
+        }
+    }
+
     updateDisplay();
 </script>
 
