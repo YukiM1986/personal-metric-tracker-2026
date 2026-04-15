@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>修行ペット - 設定</title>
+    <style>
+        body { font-family: -apple-system, sans-serif; text-align: center; background: #f8f9fa; margin: 0; padding: 20px; color: #333; }
+        .container { max-width: 400px; margin: auto; background: white; border-radius: 30px; padding: 30px 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.05); }
+        h2 { color: #666; font-size: 1.2rem; margin-bottom: 20px; }
+        
+        .user-config { background: #fff; border: 1px solid #eee; margin: 10px 0; padding: 15px; border-radius: 20px; text-align: left; }
+        .user-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .user-name { font-weight: bold; font-size: 1.1rem; }
+        
+        button { border: none; border-radius: 10px; padding: 8px 15px; cursor: pointer; font-size: 0.85rem; font-weight: bold; }
+        .btn-edit { background: #e3f2fd; color: #1976d2; }
+        .btn-reset { background: #ffebee; color: #d32f2f; }
+        
+        .all-reset { background: #d32f2f; color: white; width: 100%; padding: 15px; margin-top: 30px; border-radius: 15px; }
+        .back-link { display: inline-block; margin-top: 20px; color: #999; text-decoration: none; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>⚙️ 設定・管理</h2>
+
+    <div id="settings-list">
+        </div>
+
+    <button class="all-reset" onclick="resetTarget('all')">全データを完全にリセット</button>
+    
+    <a href="index.html" class="back-link">← 修行に戻る</a>
+</div>
+
+<script>
+    const defaultData = {
+        u1: { p: 0, i: 0, h: 0, total: 0, name: "おねえちゃん" },
+        u2: { p: 0, i: 0, h: 0, total: 0, name: "おとうとくん" },
+        u3: { p: 0, i: 0, h: 0, total: 0, name: "パパ・ママ" }
+    };
+
+    let allData = JSON.parse(localStorage.getItem('familyShugyoData')) || defaultData;
+
+    function renderSettings() {
+        const list = document.getElementById('settings-list');
+        list.innerHTML = ''; // 一度クリア
+        
+        ['u1', 'u2', 'u3'].forEach(id => {
+            const user = allData[id];
+            const div = document.createElement('div');
+            div.className = 'user-config';
+            div.innerHTML = `
+                <div class="user-header">
+                    <span class="user-name">${user.name}</span>
+                    <button class="btn-edit" onclick="editName('${id}')">名前変更</button>
+                </div>
+                <div style="font-size:0.8rem; color:#999;">
+                    合計: ${user.total}pt (P:${user.p} I:${user.i} H:${user.h})
+                </div>
+                <button class="btn-reset" style="margin-top:10px;" onclick="resetTarget('${id}')">この子のデータをリセット</button>
+            `;
+            list.appendChild(div);
+        });
+    }
+
+    function editName(id) {
+        const newName = prompt("新しい名前を入力してください", allData[id].name);
+        if (newName && newName.trim() !== "") {
+            allData[id].name = newName;
+            saveAndRefresh();
+        }
+    }
+
+    function resetTarget(target) {
+        if (!confirm("データをリセットします。本当によろしいですか？")) return;
+        if (target === 'all') {
+            const names = {u1: allData.u1.name, u2: allData.u2.name, u3: allData.u3.name};
+            allData = JSON.parse(JSON.stringify(defaultData));
+            allData.u1.name = names.u1; allData.u2.name = names.u2; allData.u3.name = names.u3;
+        } else {
+            const currentName = allData[target].name;
+            allData[target] = { p: 0, i: 0, h: 0, total: 0, name: currentName };
+        }
+        saveAndRefresh();
+    }
+
+    function saveAndRefresh() {
+        localStorage.setItem('familyShugyoData', JSON.stringify(allData));
+        renderSettings();
+    }
+
+    // 初回表示
+    renderSettings();
+</script>
+
+</body>
+</html>
