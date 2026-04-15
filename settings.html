@@ -35,18 +35,31 @@
 </div>
 
 <script>
-    const defaultData = {
-        u1: { p: 0, i: 0, h: 0, total: 0, name: "おねえちゃん" },
-        u2: { p: 0, i: 0, h: 0, total: 0, name: "おとうとくん" },
-        u3: { p: 0, i: 0, h: 0, total: 0, name: "パパ・ママ" }
-    };
+const defaultData = {
+    u1: { p: 0, i: 0, h: 0, total: 0, name: "おねえちゃん" },
+    u2: { p: 0, i: 0, h: 0, total: 0, name: "おとうとくん" },
+    u3: { p: 0, i: 0, h: 0, total: 0, name: "パパ・ママ" },
+    // ボタン名の設定を追加
+    config: {
+        btnP: "空手・ダンス",
+        btnI: "英語・学習",
+        btnH: "お手伝い"
+    }
+};
 
     let allData = JSON.parse(localStorage.getItem('familyShugyoData')) || defaultData;
 
     function renderSettings() {
         const list = document.getElementById('settings-list');
         list.innerHTML = ''; // 一度クリア
-        
+        <div class="user-config">
+            <div class="user-header"><b>ボタンのなまえ設定</b></div>
+            <button class="btn-edit" onclick="editBtnName('btnP')">💪名変更</button>
+            <button class="btn-edit" onclick="editBtnName('btnI')">🧠名変更</button>
+            <button class="btn-edit" onclick="editBtnName('btnH')">💖名変更</button>
+        </div>
+    ` + list.innerHTML; // 既存のユーザーリストの前に表示
+    
         ['u1', 'u2', 'u3'].forEach(id => {
             const user = allData[id];
             const div = document.createElement('div');
@@ -69,6 +82,15 @@
         const newName = prompt("新しい名前を入力してください", allData[id].name);
         if (newName && newName.trim() !== "") {
             allData[id].name = newName;
+            saveAndRefresh();
+        }
+    }
+
+    function editBtnName(key) {
+        const current = allData.config[key];
+        const newName = prompt("ボタンの表示名を変えるよ", current);
+        if (newName) {
+            allData.config[key] = newName;
             saveAndRefresh();
         }
     }
