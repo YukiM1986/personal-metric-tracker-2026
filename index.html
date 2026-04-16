@@ -101,6 +101,13 @@
     }
 
     function updateDisplay() {
+        const stages = [
+          { threshold: 500, icon: "🦅" },
+          { threshold: 400, icon: "🦆" },
+          { threshold: 300, icon: "🐓" },
+          { threshold: 100, icon: "🐥" },
+          { threshold: 0,   icon: "🥚" }
+        ];
         if (!currentUser) return;
         const d = allData[currentUser];
         document.getElementById('total-display').innerText = d.total;
@@ -110,7 +117,9 @@
         document.getElementById('p-bar').style.width = Math.min((d.p / 150) * 100, 100) + "%";
         document.getElementById('i-bar').style.width = Math.min((d.i / 150) * 100, 100) + "%";
         document.getElementById('h-bar').style.width = Math.min((d.h / 150) * 100, 100) + "%";
-        document.getElementById('pet-stage').innerText = d.total >= 100 ? "🐥" : "🥚";
+        // 現在のスコアに合う最初の要素を見つける
+        const currentStage = stages.find(s => d.total >= s.threshold);
+        document.getElementById('pet-stage').innerText = currentStage.icon;
     }
 
     function addPoint(type, pts) {
