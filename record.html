@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>修行ペット - 成果登録</title>
+    <style>
+        body { font-family: -apple-system, sans-serif; background: #f8f9fa; margin: 0; padding: 20px; color: #333; text-align: center; }
+        .container { max-width: 400px; margin: auto; background: white; border-radius: 30px; padding: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.05); }
+        
+        .category-section { margin-bottom: 12px; border: 2px solid #f1f3f5; border-radius: 15px; overflow: hidden; text-align: left; }
+        .category-header { background: #f8f9fa; padding: 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-weight: bold; }
+        
+        /* 初期状態で表示 */
+        .category-content { display: block; padding: 0 10px; }
+        .category-content.closed { display: none; }
+        
+        /* 初期状態で矢印を下向きに */
+        .arrow { transition: transform 0.3s; color: #ccc; transform: rotate(180deg); }
+        .closed-header .arrow { transform: rotate(0deg); }
+
+        .row { display: flex; align-items: center; justify-content: space-between; padding: 12px 5px; border-bottom: 1px solid #fafafa; }
+        .item-name { font-weight: bold; font-size: 0.9rem; }
+        .item-pts { font-size: 0.75rem; color: #999; }
+        
+        input[type="number"] { width: 55px; padding: 10px; border-radius: 10px; border: 1px solid #ddd; text-align: center; font-size: 1.1rem; }
+        input[type="date"] { padding: 10px; border-radius: 10px; border: 1px solid #ddd; margin-bottom: 20px; font-size: 1rem; width: 80%; }
+        
+        .total-area { margin-top: 20px; padding: 15px; background: #e7f5ff; border-radius: 15px; }
+        .btn-save { background: #4dabf7; color: white; border: none; padding: 15px; width: 100%; border-radius: 15px; font-weight: bold; font-size: 1.1rem; cursor: pointer; margin-top: 15px; }
+        .btn-back { display: block; margin-top: 15px; color: #999; text-decoration: none; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 id="user-title">修行の成果</h2>
+        <input type="date" id="target-date">
+        <div id="input-list"></div>
+        <div class="total-area">
+            <div>本日の合計: <strong><span id="daily-total">0</span> EXP</strong></div>
+        </div>
+        <button class="btn-save" onclick="saveRecord()">登録する</button>
+        <a href="main.html" class="btn-back">もどる</a>
+    </div>
+
+    <script>
+        let currentUser = localStorage.getItem('shugyoPet_currentUser');
+        let allData = JSON.parse(localStorage.getItem('familyShugyoData'));
+
+        const masterItems = [
+            { id: 'p_karate_kiso', type: 'p', label: '空手基礎練習', exp: 0.1 },
+            { id: 'p_karate_geki2', type: 'p', label: '撃砕第二', exp: 1 },
+            { id: 'p_karate_sepai', type: 'p', label: 'セーパイ', exp: 2 },
+            { id: 'p_karate_saifa', type: 'p', label: 'サイファ', exp: 2 },
+            { id: 'p_karate_sesan', type: 'p', label: 'セーサン', exp: 2 },
+            { id: 'p_karate_kururunfa', type: 'p', label: 'クルルンファ', exp: 2 },
+            { id: 'p_karate_kumite', type: 'p', label: '組手', exp: 1 },
+            { id: 'p_streach', type: 'p', label: 'ストレッチ', exp: 1 },
+            { id: 'p_ballet', type: 'p', label: 'バレエ', exp: 2 },
+            { id: 'p_other', type: 'p', label: 'その他', exp: 1 },
+            { id: 'i_english', type: 'i', label: '英会話', exp: 10 },
+            { id: 'i_asasabo_topday', type: 'i', label: 'あささぼ（当日）', exp: 5 },
+            { id: 'i_asasabo_other', type: 'i', label: 'あささぼ（当日以外）', exp: 1 },
+            { id: 'i_other', type: 'i', label: 'その他', exp: 1 },
+            { id: 'h_bath', type: 'h', label: 'お風呂掃除', exp: 1 },
+            { id: 'h_cook', type: 'h', label: '料理', exp: 1 },
+            { id: 'h_wash', type: 'h', label: '洗濯物たたみ', exp: 1 },
+            { id: 'h_trash', type: 'h', label: 'ゴミ出し', exp: 1 },
+            { id: 'h_dish', type: 'h', label: '洗い物', exp: 2 },
+            { id: 'h_tidyup', type: 'h', label: '部屋の片づけ', exp: 1 },
+            { id: 'h_table', type: 'h', label: 'テーブルの片づけ', exp: 1 },
+            { id: 'h_other', type: 'h', label: 'その他', exp: 1 }
+        ];
+
+        const dateInput = document.getElementById('target-date');
+
+        function init() {
+            const today = new Date().toLocaleString("ja-JP", {timeZone: "Asia/Tokyo", year: "numeric", month: "2-digit", day: "2-digit"}).split('/').join('-');
+            dateInput.value = today;
+            document.getElementById('user-title').innerText = allData[currentUser].name + "の修行";
+            loadDateData();
+            dateInput.addEventListener('change', loadDateData);
+        }
+
+        function loadDateData() {
+            const date = dateInput.value;
+            const history = allData[currentUser].history || {};
+            const dayData = history[date] || {};
+            const list = document.getElementById('input-list');
+            list.innerHTML = '';
+            const groups = { p: '💪 ちから', i: '🧠 かしこさ', h: '💖 やさしさ' };
+
+            Object.keys(groups).forEach(type => {
+                const section = document.createElement('div');
+                section.className = 'category-section';
+                const header = document.createElement('div');
+                header.className = 'category-header';
+                header.innerHTML = `<span>${groups[type]}</span> <span class="arrow">▼</span>`;
+                const content = document.createElement('div');
+                content.className = 'category-content';
+
+                header.onclick = () => {
+                    content.classList.toggle('closed');
+                    header.classList.toggle('closed-header');
+                };
+
+                masterItems.filter(item => item.type === type).forEach(item => {
+                    const count = dayData[item.id] || 0;
+                    const row = document.createElement('div');
+                    row.className = 'row';
+                    const subtotal = count * item.exp;
+                    const displaySubtotal = (item.exp % 1 === 0) ? subtotal : subtotal.toFixed(1);
+
+                    row.innerHTML = `
+                        <div class="item-info">
+                            <div class="item-name">${item.label}</div>
+                            <div class="item-pts">${item.exp}pt × <span id="subtotal-${item.id}">${displaySubtotal}</span></div>
+                        </div>
+                        <input type="number" id="input-${item.id}" value="${count}" min="0" step="1" inputmode="numeric"
+                               oninput="calcTotal()" onblur="calcTotal()">
+                    `;
+                    content.appendChild(row);
+                });
+                section.appendChild(header);
+                section.appendChild(content);
+                list.appendChild(section);
+            });
+            calcTotal();
+        }
+
+        function calcTotal() {
+            let dailyTotal = 0;
+            masterItems.forEach(item => {
+                const input = document.getElementById(`input-${item.id}`);
+                if (input) {
+                    let val = Math.floor(parseFloat(input.value) || 0);
+                    input.value = val;
+                    const subtotal = val * item.exp;
+                    const displaySubtotal = (item.exp % 1 === 0) ? subtotal : subtotal.toFixed(1);
+                    document.getElementById(`subtotal-${item.id}`).innerText = displaySubtotal;
+                    dailyTotal += subtotal;
+                }
+            });
+            document.getElementById('daily-total').innerText = Math.floor(dailyTotal);
+        }
+
+        function saveRecord() {
+            const date = dateInput.value;
+            if (!allData[currentUser].history) allData[currentUser].history = {};
+            const newData = {};
+            masterItems.forEach(item => {
+                newData[item.id] = Math.floor(parseFloat(document.getElementById(`input-${item.id}`).value) || 0);
+            });
+            allData[currentUser].history[date] = newData;
+            localStorage.setItem('familyShugyoData', JSON.stringify(allData));
+            alert("登録しました！");
+            window.location.href = 'main.html';
+        }
+
+        init();
+    </script>
+</body>
+</html>

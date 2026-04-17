@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>修行ペット - キャラクター履歴</title>
+    <style>
+        body {
+            font-family: -apple-system, sans-serif;
+            text-align: center;
+            background: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: auto;
+            background: white;
+            border-radius: 30px;
+            padding: 30px 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+        }
+
+        h2 {
+            color: #4dabf7;
+            margin-bottom: 20px;
+        }
+
+        .collection-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .char-card {
+            background: #fff;
+            border: 2px solid #f1f3f5;
+            border-radius: 20px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .char-card img {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            margin-bottom: 10px;
+        }
+
+        .char-name {
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .char-date {
+            font-size: 0.7rem;
+            color: #bbb;
+            margin-top: 5px;
+        }
+
+        .btn-back {
+            display: block;
+            background: #dee2e6;
+            color: #495057;
+            border: none;
+            padding: 15px;
+            /* width: 100%;  ← これを削除 */
+            border-radius: 20px;
+            font-weight: bold;
+            text-decoration: none;
+            margin-top: 30px;
+
+            /* ★ はみ出し防止のための設定を追加 */
+            box-sizing: border-box;
+            /* パディングを含めてサイズ計算する設定 */
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>📜 キャラクター履歴</h2>
+        <div id="user-info" style="font-size: 0.9rem; color: #999; margin-bottom: 10px;"></div>
+
+        <div id="collection-list" class="collection-grid">
+        </div>
+
+        <a href="main.html" class="btn-back">もどる</a>
+    </div>
+
+    <script>
+        function loadCollection() {
+            const currentUser = localStorage.getItem('shugyoPet_currentUser');
+            const allData = JSON.parse(localStorage.getItem('familyShugyoData'));
+
+            if (!allData || !currentUser) {
+                location.href = 'index.html';
+                return;
+            }
+
+            const d = allData[currentUser];
+            document.getElementById('user-info').innerText = d.name + "がみつけたキャラクター";
+
+            const listElement = document.getElementById('collection-list');
+            const collection = d.collection || [];
+
+            if (collection.length === 0) {
+                listElement.innerHTML = "<p style='grid-column: 1/3; color:#ccc; padding:20px;'>まだ履歴がありません。<br>修行をして進化させよう！</p>";
+                return;
+            }
+
+            collection.forEach(char => {
+                const card = document.createElement('div');
+                card.className = 'char-card';
+                card.innerHTML = `
+                    <img src="${char.img}">
+                    <div class="char-name">${char.characterName}</div>
+                    <div class="char-date">${char.date} にはっけん！</div>
+                `;
+                listElement.appendChild(card);
+            });
+        }
+
+        window.onload = loadCollection;
+    </script>
+</body>
+
+</html>

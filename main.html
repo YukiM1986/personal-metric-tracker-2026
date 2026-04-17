@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>修行ペット - メイン</title>
+    <style>
+        body {
+            font-family: -apple-system, sans-serif;
+            text-align: center;
+            background: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: auto;
+            background: white;
+            border-radius: 30px;
+            padding: 30px 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+        }
+
+        .pet-display {
+            font-size: 80px;
+            margin: 10px 0;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .level-badge {
+            background: #ffd43b;
+            color: #856404;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        /* EXPゲージ */
+        .exp-container {
+            background: #e9ecef;
+            border-radius: 10px;
+            height: 20px;
+            width: 80%;
+            margin: 15px auto;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #exp-bar-fill {
+            background: linear-gradient(90deg, #4dabf7, #339af0);
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        /* ポイント詳細 */
+        .points-summary {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            padding: 15px;
+            background: #f1f3f5;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .pts-item div:first-child {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+
+        .action-btn {
+            background: #4dabf7;
+            color: white;
+            border: none;
+            padding: 18px;
+            width: 100%;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 4px 10px rgba(77, 171, 247, 0.3);
+        }
+
+        .nav-link {
+            display: block;
+            margin-top: 20px;
+            color: #999;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2 id="user-name">読み込み中...</h2>
+        <div class="level-badge">Lv. <span id="level-display">0</span></div>
+        <div class="pet-display" id="pet-img">🥚</div>
+        <div id="character-name-display"
+            style="font-weight: bold; font-size: 1.2rem; margin-top: -10px; margin-bottom: 20px; color: #555;">
+            読み込み中...
+        </div>
+
+        <div class="exp-container">
+            <div id="exp-bar-fill"></div>
+        </div>
+        <div style="font-size:0.8rem; color:#666;">あと <span id="next-lv-pts">100</span> EXP でレベルアップ！</div>
+
+        <div class="points-summary">
+            <div class="pts-item">
+                <div>💪</div>
+                <div id="p-pts">0</div>
+            </div>
+            <div class="pts-item">
+                <div>🧠</div>
+                <div id="i-pts">0</div>
+            </div>
+            <div class="pts-item">
+                <div>💖</div>
+                <div id="h-pts">0</div>
+            </div>
+        </div>
+
+        <button class="action-btn" onclick="location.href='record.html'">✨ 修行の成果を登録する</button>
+        <button class="action-btn" style="background:#82c91e; margin-top:10px;"
+            onclick="location.href='collection.html'">📜 キャラクター履歴をみる</button>
+        <a href="index.html" class="nav-link">ユーザーを選びなおす</a>
+    </div>
+
+    <script>
+        // 設定データ（record.htmlと同じものが必要）
+        const masterItems = [
+            { id: 'p_karate_kiso', type: 'p', exp: 0.1 },
+            { id: 'p_karate_geki2', type: 'p', exp: 1 },
+            { id: 'p_karate_sepai', type: 'p', exp: 2 },
+            { id: 'p_karate_saifa', type: 'p', exp: 2 },
+            { id: 'p_karate_sesan', type: 'p', exp: 2 },
+            { id: 'p_karate_kururunfa', type: 'p', exp: 2 },
+            { id: 'p_karate_kumite', type: 'p', exp: 1 },
+            { id: 'p_streach', type: 'p', exp: 1 },
+            { id: 'p_ballet', type: 'p', exp: 2 },
+            { id: 'p_other', type: 'p', exp: 1 },
+            { id: 'i_english', type: 'i', exp: 10 },
+            { id: 'i_asasabo_topday', type: 'i', exp: 5 },
+            { id: 'i_asasabo_other', type: 'i', exp: 1 },
+            { id: 'i_other', type: 'i', exp: 1 },
+            { id: 'h_bath', type: 'h', exp: 1 },
+            { id: 'h_cook', type: 'h', exp: 1 },
+            { id: 'h_wash', type: 'h', exp: 1 },
+            { id: 'h_trash', type: 'h', exp: 1 },
+            { id: 'h_dish', type: 'h', exp: 2 },
+            { id: 'h_tidyup', type: 'h', exp: 1 },
+            { id: 'h_table', type: 'h', exp: 1 },
+            { id: 'h_other', type: 'h', exp: 1 }
+        ];
+
+        // ローカル画像マスター（thresholdはレベル1, 2, 3...に対応）
+        const evolutionMaster = [
+            { threshold: 0, type: 'p', img: 'img/0_egg.png', characterName: 'たまご' },
+            { threshold: 0, type: 'i', img: 'img/0_egg.png', characterName: 'たまご' },
+            { threshold: 0, type: 'h', img: 'img/0_egg.png', characterName: 'たまご' },
+            { threshold: 1, type: 'p', img: 'img/1_p_hiyoko.png', characterName: 'ムキムキひよこ' },
+            { threshold: 1, type: 'i', img: 'img/1_i_hiyoko.png', characterName: 'めがねひよこ' },
+            { threshold: 1, type: 'h', img: 'img/1_h_hiyoko.png', characterName: 'お手伝いひよこ' },
+            { threshold: 2, type: 'p', img: 'img/2_p_niwatori.png', characterName: 'マッチョにわとり' },
+            { threshold: 2, type: 'i', img: 'img/2_i_niwatori.png', characterName: 'がり勉にわとり' },
+            { threshold: 2, type: 'h', img: 'img/2_h_niwatori.png', characterName: 'お助けにわとり' },
+            { threshold: 3, type: 'p', img: 'img/3_p_niwatori.png', characterName: 'キングにわとり戦士' },
+            { threshold: 3, type: 'i', img: 'img/3_i_niwatori.png', characterName: '天才にわとり賢者' },
+            { threshold: 3, type: 'h', img: 'img/3_h_niwatori.png', characterName: '敏腕にわとりメイド長' },
+        ];
+
+        function updateDisplay() {
+            const currentUser = localStorage.getItem('shugyoPet_currentUser');
+            let allData = JSON.parse(localStorage.getItem('familyShugyoData'));
+
+            if (!allData || !currentUser) {
+                location.href = 'index.html';
+                return;
+            }
+
+            const d = allData[currentUser];
+            const history = d.history || {};
+
+            // 1. 全履歴から経験値を再集計
+            let totalH = 0, totalI = 0, totalP = 0;
+            Object.values(history).forEach(day => {
+                for (let itemId in day) {
+                    const count = day[itemId] || 0;
+                    const item = masterItems.find(m => m.id === itemId);
+                    if (item) {
+                        const pts = count * item.exp;
+                        if (item.type === 'h') totalH += pts;
+                        if (item.type === 'i') totalI += pts;
+                        if (item.type === 'p') totalP += pts;
+                    }
+                }
+            });
+
+            const LEVEL_UP_EXP = 100;
+            const totalExp = totalH + totalI + totalP;
+            const level = Math.floor(totalExp / LEVEL_UP_EXP);
+            const currentLevelExp = totalExp % LEVEL_UP_EXP;
+
+            // 2. 画面の基本情報を更新
+            document.getElementById('user-name').innerText = d.name;
+            document.getElementById('level-display').innerText = level;
+            document.getElementById('p-pts').innerText = Math.floor(totalP);
+            document.getElementById('i-pts').innerText = Math.floor(totalI);
+            document.getElementById('h-pts').innerText = Math.floor(totalH);
+            document.getElementById('exp-bar-fill').style.width = currentLevelExp + "%";
+            document.getElementById('next-lv-pts').innerText = Math.floor(LEVEL_UP_EXP - currentLevelExp);
+
+            // 3. 進化画像の判定
+            let maxType = 'p';
+            if (totalI > totalP && totalI > totalH) maxType = 'i';
+            else if (totalH > totalP && totalH > totalI) maxType = 'h';
+
+            const found = evolutionMaster.find(f => f.threshold === level && f.type === maxType);
+            const petImgElement = document.getElementById('pet-img');
+            const nameDisplayElement = document.getElementById('character-name-display');
+
+            if (found) {
+                petImgElement.innerHTML = `<img src="${found.img}" style="width:100px; height:100px; object-fit:contain;">`;
+                nameDisplayElement.innerText = found.characterName;
+
+                // ★ ここで保存処理を呼ぶ（引数に必要なデータをすべて渡す）
+                saveToCollection(found, d, allData);
+            } else {
+                petImgElement.innerText = "🐣";
+                nameDisplayElement.innerText = "修行中のたまご";
+            }
+        }
+
+        // 引数でユーザーデータを受け取るようにして確実に保存する
+        function saveToCollection(character, userData, allData) {
+            if (!userData.collection) userData.collection = [];
+
+            // すでに同じ名前のキャラクターが履歴にあるかチェック
+            const exists = userData.collection.some(c => c.characterName === character.characterName);
+
+            if (!exists) {
+                // 新しいキャラクターを履歴に追加
+                userData.collection.push({
+                    characterName: character.characterName,
+                    img: character.img,
+                    date: new Date().toLocaleDateString("ja-JP")
+                });
+
+                // localStorage に即座に保存
+                localStorage.setItem('familyShugyoData', JSON.stringify(allData));
+                console.log("新しいキャラクターを履歴に保存しました:", character.characterName);
+            }
+        }
+
+
+        // ページ読み込み時に実行
+        window.onload = updateDisplay;
+    </script>
+</body>
+
+</html>
