@@ -119,7 +119,7 @@
             <div class="card-header">🏷️ 修行ボタンの名前</div>
             <div class="btn-grid">
                 <button class="btn-edit" onclick="editBtnName('btnP')">💪名</button>
-                <button class="btn-edit" onclick="editBtnName('btnI')">🧠名</button>
+                <button class="btn-edit" onclick="editBtnName('btnI')">✏名</button>
                 <button class="btn-edit" onclick="editBtnName('btnH')">💖名</button>
             </div>
             <p id="current-btns"
@@ -167,7 +167,7 @@
             // ボタン名のプレビュー表示
             const cfg = allData.config;
             document.getElementById('current-btns').innerText =
-                `現在の設定：\n💪${cfg.btnP} / 🧠${cfg.btnI} / 💖${cfg.btnH}`;
+                `現在の設定：\n💪${cfg.btnP} / ✏${cfg.btnI} / 💖${cfg.btnH}`;
 
             // ユーザーリストの生成
             const listContainer = document.getElementById('settings-list');
@@ -183,7 +183,7 @@
                     <button class="btn-edit" onclick="editUserName('${id}')">名前変更</button>
                 </div>
                 <div style="font-size:0.8rem; color:#666; margin-top:5px;">
-                    合計：${user.total}pt (💪${user.p} 🧠${user.i} 💖${user.h})
+                    合計：${user.total}pt (💪${user.p} ✏${user.i} 💖${user.h})
                 </div>
                 <button class="btn-reset" onclick="resetTarget('${id}')">この子のデータをリセット</button>
             `;
